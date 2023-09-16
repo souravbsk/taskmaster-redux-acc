@@ -32,7 +32,7 @@ const MyTasks = () => {
       <div className=" h-[750px] overflow-auto space-y-3">
         {userSpecificTasks?.map((item) => (
           <div
-            key={item.id}
+            key={item._id}
             className="bg-secondary/10 rounded-md p-3 flex justify-between"
           >
             <h1>{item.title}</h1>

@@ -1,18 +1,31 @@
-import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import loginImage from '../assets/image/login.svg';
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import loginImage from "../assets/image/login.svg";
+import { useDispatch, useSelector } from "react-redux";
+import { signInUser, signInWithGoogle } from "../redux/features/user/userSlice";
+import { useEffect } from "react";
 const Login = () => {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { isLoading, email } = useSelector((state) => state?.userSlice);
 
   const onSubmit = ({ email, password }) => {
     // Email Password Login
+    dispatch(signInUser({email,password}))
 
-    console.log(email, password);
   };
+  useEffect(() => {
+    console.log(isLoading);
+    if (!isLoading && email) {
+      console.log(email);
+      navigate("/");
+    }
+  }, [isLoading, email]);
 
   const handleGoogleLogin = () => {
     //  Google Login
+    dispatch(signInWithGoogle());
   };
 
   return (
@@ -30,7 +43,7 @@ const Login = () => {
                 type="email"
                 id="email"
                 className="w-full rounded-md"
-                {...register('email')}
+                {...register("email")}
               />
             </div>
             <div className="flex flex-col items-start">
@@ -39,7 +52,7 @@ const Login = () => {
                 type="password"
                 id="password"
                 className="w-full rounded-md"
-                {...register('password')}
+                {...register("password")}
               />
             </div>
             <div className="relative !mt-8">
@@ -49,10 +62,10 @@ const Login = () => {
             </div>
             <div>
               <p>
-                Don&apos;t have an account?{' '}
+                Don&apos;t have an account?{" "}
                 <span
                   className="text-primary hover:underline cursor-pointer"
-                  onClick={() => navigate('/signup')}
+                  onClick={() => navigate("/signup")}
                 >
                   Sign up
                 </span>

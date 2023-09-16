@@ -1,21 +1,24 @@
-import { useEffect, useState } from 'react';
-import loginImage from '../assets/image/login.svg';
-import { useForm, useWatch } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-
+import { useEffect, useState } from "react";
+import loginImage from "../assets/image/login.svg";
+import { useForm, useWatch } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { createUser, signInWithGoogle } from "../redux/features/user/userSlice";
+import toast, { Toaster } from "react-hot-toast";
 const Signup = () => {
   const { handleSubmit, register, control } = useForm();
-  const password = useWatch({ control, name: 'password' });
-  const confirmPassword = useWatch({ control, name: 'confirmPassword' });
+  const password = useWatch({ control, name: "password" });
+  const confirmPassword = useWatch({ control, name: "confirmPassword" });
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(true);
-
+  const dispatch = useDispatch();
+  const { isLoading, email, error } = useSelector((state) => state?.userSlice);
   useEffect(() => {
     if (
       password !== undefined &&
-      password !== '' &&
+      password !== "" &&
       confirmPassword !== undefined &&
-      confirmPassword !== '' &&
+      confirmPassword !== "" &&
       password === confirmPassword
     ) {
       setDisabled(false);
@@ -24,13 +27,28 @@ const Signup = () => {
     }
   }, [password, confirmPassword]);
 
+  useEffect(() => {
+    console.log(isLoading);
+    if (!isLoading && email) {
+      console.log(email);
+      navigate("/");
+    }
+  }, [isLoading,email]);
+
+  useEffect(() => {
+    if (isLoading && error) {
+      toast(error);
+    }
+  }, [isLoading,error]);
+
   const onSubmit = ({ name, email, password }) => {
     // Email Password signup
-    console.log(name, email, password);
+    dispatch(createUser({ email, password, name }));
   };
 
   const handleGoogleLogin = () => {
     // Google Login
+    dispatch(signInWithGoogle())
   };
 
   return (
@@ -38,6 +56,7 @@ const Signup = () => {
       <div className="w-1/2">
         <img src={loginImage} className="h-full w-full" alt="" />
       </div>
+      <Toaster />
       <div className="w-1/2  grid place-items-center">
         <div className="bg-primary/5 w-full max-w-sm rounded-lg grid place-items-center p-10">
           <h1 className="mb-10 font-medium text-2xl">Sign up</h1>
@@ -48,7 +67,7 @@ const Signup = () => {
                 type="text"
                 id="name"
                 className="w-full rounded-md"
-                {...register('name')}
+                {...register("name")}
               />
             </div>
             <div className="flex flex-col items-start">
@@ -57,7 +76,7 @@ const Signup = () => {
                 type="email"
                 id="email"
                 className="w-full rounded-md"
-                {...register('email')}
+                {...register("email")}
               />
             </div>
             <div className="flex flex-col items-start">
@@ -66,7 +85,7 @@ const Signup = () => {
                 type="password"
                 id="password"
                 className="w-full rounded-md"
-                {...register('password')}
+                {...register("password")}
               />
             </div>
             <div className="flex flex-col items-start">
@@ -75,7 +94,7 @@ const Signup = () => {
                 type="password"
                 id="confirm-password"
                 className="w-full rounded-md"
-                {...register('confirmPassword')}
+                {...register("confirmPassword")}
               />
             </div>
             <div className="!mt-8 ">
@@ -89,10 +108,10 @@ const Signup = () => {
             </div>
             <div>
               <p>
-                Already have an account?{' '}
+                Already have an account?{" "}
                 <span
                   className="text-primary hover:underline cursor-pointer"
-                  onClick={() => navigate('/login')}
+                  onClick={() => navigate("/login")}
                 >
                   Login
                 </span>
